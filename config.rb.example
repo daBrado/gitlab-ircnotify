@@ -1,0 +1,3 @@
+IRCNOTIFY_SOCKET="/path/to/ircnotify/socket"
+NAME = 'GitLab'
+LOG = Logger.new STDERR
