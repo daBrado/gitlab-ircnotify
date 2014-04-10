@@ -1,3 +1,5 @@
 IRCNOTIFY_SOCKET="/path/to/ircnotify/socket"
 NAME = 'GitLab'
 LOG = Logger.new STDERR
+MAX_LINES = 3
+SHOW_URLS = true
