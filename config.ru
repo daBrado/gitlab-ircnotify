@@ -15,10 +15,11 @@ class IRCNotifier
       s.puts({set_name:NAME,set_commands:['commits']}.to_json)
       s.each do |cmd|
         LOG.info "Got IRC command #{cmd.chomp}"
-        if @last
-          count = @last['commits'].count
-          s.puts "#{count} commit#{count!=1?'s':''} to #{@last['repository']['name']} branch #{@last['ref'].split('/')[-1]}"
-          @last['commits'].each do |commit|
+        push = @mutex.synchronize { @last }
+        if push
+          count = push['commits'].count
+          s.puts "#{count} commit#{count!=1?'s':''} to #{push['repository']['name']} branch #{push['ref'].split('/')[-1]}"
+          push['commits'].each do |commit|
             s.puts "#{commit['timestamp']} : #{commit['author']['name']} : #{commit['message']}"
           end
         else
