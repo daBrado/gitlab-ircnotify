@@ -11,7 +11,7 @@ class IRCNotifier
     @last = nil
     @irc = nil
   end
-  def notify(push, max_lines:nil)
+  def notify(push, show_commits:false)
     commits = push['commits']
     count = commits.size
     msg = []
@@ -29,13 +29,7 @@ class IRCNotifier
         commit['message'],
         SHOW_URLS ? commit['url'] : nil
       ].compact.join(' : ')
-    })
-    LOG.info msg
-    if max_lines && msg.count > max_lines
-      dropped = 1 + msg.count - max_lines
-      msg = msg[0...max_lines-1]
-      msg << "  (not showing remaining #{'commit'.qty(dropped)}; use !commits to see them all)"
-    end
+    }) if show_commits
     @mutex.synchronize { msg.each{|l|@irc.puts(l)} }
     LOG.info "Push notification sent to #{IRCNOTIFY_SOCKET}"
   end
@@ -48,7 +42,7 @@ class IRCNotifier
         LOG.info "IRC command #{cmd.chomp}"
         push = @mutex.synchronize { @last }
         if push
-          notify push
+          notify push, show_commits:true
         else
           @irc.puts 'no push since startup of this service'
         end
@@ -65,7 +59,7 @@ class IRCNotifier
       return [400, {}, []]
     end
     @mutex.synchronize { @last = push }
-    notify push, max_lines:MAX_LINES
+    notify push
     [200, {}, []]
   end
 end
