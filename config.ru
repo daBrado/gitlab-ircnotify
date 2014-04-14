@@ -14,14 +14,20 @@ class IRCNotifier
   def notify(push, show_commits:false)
     commits = push['commits']
     count = commits.size
+    branch = push['ref'].split('/')[-1]
     msg = []
     msg << [
       push['repository']['name'],
-      push['ref'].split('/')[-1],
+      branch,
       push['user_name'],
-      'commit'.qty(count),
-      SHOW_URLS ? "#{push['repository']['homepage']}/compare/#{push['before']}...#{push['after']}" : nil
-    ].join(' | ')
+      if push['before'] =~ /^0+$/
+        ['branch created', SHOW_URLS ? "#{push['repository']['homepage']}/commits/#{branch}" : nil]
+      elsif push['after'] =~ /^0+$/
+        ['branch deleted', SHOW_URLS ? "#{push['repository']['homepage']}" : nil]
+      else
+        ['commit'.qty(count), SHOW_URLS ? "#{push['repository']['homepage']}/compare/#{push['before']}...#{push['after']}" : nil]
+      end
+    ].flatten.join(' | ')
     msg.push(*commits.map{|commit|
       "  " + [
         commit['author']['name'],
