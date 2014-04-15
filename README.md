@@ -1,6 +1,6 @@
 # GitLab ircnotify
 
-GitLab ircnotify is a Ruby + Rack implementation of a simple daemon to tell `ircnotify` about new commits, triggered by a GitLab web hook.
+GitLab ircnotify is a Ruby + Rack implementation of a simple daemon to tell [ircnotify](https://github.com/DavisMakerspace/ircnotify) about new commits, triggered by a GitLab web hook.
 
 ## Install
 
